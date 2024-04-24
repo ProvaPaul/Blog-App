@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Blog App</string>
+    <string name="title_activity_drawer_actvity">DrawerActvity</string>
+    <string name="nav_header_title">Blog App</string>
+    <string name="nav_header_subtitle">youtube.com/artorean</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Publish Blog</string>
+    <string name="menu_slideshow">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">19102672636-gv1o4vggqnb466odcah3bmrc5lk82ia3.apps.googleusercontent.com</string>
+
+</resources>
