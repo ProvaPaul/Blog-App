@@ -163,7 +163,7 @@ public class Publish extends Fragment {
 
         });
 
-            }
+    }
 
 
 
