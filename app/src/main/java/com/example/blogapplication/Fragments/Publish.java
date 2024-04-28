@@ -29,6 +29,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.example.blogapplication.databinding.FragmentPublishBinding;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.DexterError;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.PermissionRequestErrorListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -95,80 +102,96 @@ public class Publish extends Fragment {
         binding.btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (binding.bTittle.getText().toString().equals("")) {
-                    binding.bTittle.setError("Field is Required!!");
-                } else if (binding.bDesc.getText().toString().equals("")) {
-                    binding.bDesc.setError("Field is Required!!");
-                } else if (binding.bAuthor.getText().toString().equals("")) {
-                    binding.bAuthor.setError("Field is Required!!");
-                } else {
-                    ProgressDialog pd = new ProgressDialog(getContext());
-                    pd.setTitle("Uploading...");
-                    pd.setMessage("Please wait for a while until we upload this data to our Firebase Storage and Firestore");
-                    pd.setCancelable(false);
-                    pd.show();
+                Dexter.withActivity(getActivity()).withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE).withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                        if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                            if (binding.bTittle.getText().toString().equals("")) {
+                                binding.bTittle.setError("Field is Required!!");
+                            } else if (binding.bDesc.getText().toString().equals("")) {
+                                binding.bDesc.setError("Field is Required!!");
+                            } else if (binding.bAuthor.getText().toString().equals("")) {
+                                binding.bAuthor.setError("Field is Required!!");
+                            } else {
+                                ProgressDialog pd = new ProgressDialog(getContext());
+                                pd.setTitle("Uploading...");
+                                pd.setMessage("Please wait for a while until we upload this data to our Firebase Storage and Firestore");
+                                pd.setCancelable(false);
+                                pd.show();
 
-                    String title = binding.bTittle.getText().toString();
-                    String desc = binding.bDesc.getText().toString();
-                    String author = binding.bAuthor.getText().toString();
-                    if (filepath != null) {
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference reference = storage.getReference().child("images/" + filepath.toString() + ".jpg");
-                        reference.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                reference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        String file_url = task.getResult().toString();
-                                        String date = (String) DateFormat.format("dd", new Date());
-                                        String month = (String) DateFormat.format("MMM", new Date());
-                                        String final_date = date + " " + month;
+                                String title = binding.bTittle.getText().toString();
+                                String desc = binding.bDesc.getText().toString();
+                                String author = binding.bAuthor.getText().toString();
 
-                                        HashMap<String, String> map = new HashMap<>();
-                                        map.put("tittle", title);
-                                        map.put("desc", desc);
-                                        map.put("author", author);
-                                        map.put("date", final_date);
-                                        map.put("img", file_url);
-                                        map.put("timestamp", String.valueOf(System.currentTimeMillis()));
-                                        map.put("share_count", "0");
+                                if (filepath != null) {
+                                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                                    StorageReference reference = storage.getReference().child("images/" + filepath.toString() + ".jpg");
+                                    reference.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                            reference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Uri> task) {
+                                                    String file_url = task.getResult().toString();
+                                                    String date = (String) DateFormat.format("dd", new Date());
+                                                    String month = (String) DateFormat.format("MMM", new Date());
+                                                    String final_date = date + " " + month;
 
-                                        FirebaseFirestore.getInstance().collection("Blogs").document().set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    pd.dismiss();
-                                                    Toast.makeText(getContext(), "Post Uploaded!!!", Toast.LENGTH_SHORT).show();
+                                                    HashMap<String, String> map = new HashMap<>();
+                                                    map.put("tittle", title);
+                                                    map.put("desc", desc);
+                                                    map.put("author", author);
+                                                    map.put("date", final_date);
+                                                    map.put("img", file_url);
+                                                    map.put("timestamp", String.valueOf(System.currentTimeMillis()));
+                                                    map.put("share_count", "0");
 
-                                                    binding.imgThumbnail.setVisibility(View.INVISIBLE);
-                                                    binding.view2.setVisibility(View.VISIBLE);
-                                                    binding.bSelectImage.setVisibility(View.VISIBLE);
-                                                    binding.bTittle.setText("");
-                                                    binding.bDesc.setText("");
-                                                    binding.bAuthor.setText("");
+                                                    FirebaseFirestore.getInstance().collection("Blogs").document().set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                pd.dismiss();
+                                                                Toast.makeText(getContext(), "Post Uploaded!!!", Toast.LENGTH_SHORT).show();
+
+                                                                binding.imgThumbnail.setVisibility(View.INVISIBLE);
+                                                                binding.view2.setVisibility(View.VISIBLE);
+                                                                binding.bSelectImage.setVisibility(View.VISIBLE);
+                                                                binding.bTittle.setText("");
+                                                                binding.bDesc.setText("");
+                                                                binding.bAuthor.setText("");
+                                                            }
+                                                        }
+                                                    });
                                                 }
-                                            }
-                                        });
-                                    }
-                                });
+                                            });
+                                        }
+                                    });
+                                }
+
+
                             }
-                        });
+                        }
+                        if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()){
+                            showsettingdialog();
+                        }
                     }
 
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();
+                    }
 
-
-                }
+                }).withErrorListener(new PermissionRequestErrorListener() {
+                    @Override
+                    public void onError(DexterError dexterError) {
+                        getActivity().finish();
+                    }
+                }).onSameThread().check();
             }
 
         });
 
     }
-
-
-
-
-
 
     private void showsettingdialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
