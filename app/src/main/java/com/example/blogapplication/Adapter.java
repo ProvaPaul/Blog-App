@@ -52,6 +52,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         holder.author.setText(model.getAuthor());
 
         Glide.with(holder.author.getContext()).load(model.getImg()).into(holder.img);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(holder.author.getContext(), BlogDetail.class);
+                intent.putExtra("id", model.getId());
+                holder.author.getContext().startActivity(intent);
+            }
+        });
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
