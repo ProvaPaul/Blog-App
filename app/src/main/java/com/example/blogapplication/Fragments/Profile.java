@@ -11,26 +11,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-
+import com.example.blogapplication.ProfileViewModel;
 import com.example.blogapplication.R;
 import com.example.blogapplication.SplashActivity;
 import com.example.blogapplication.databinding.FragmentProfileBinding;
+import com.example.blogapplication.GoogleSignInClientInstance;
 
 public class Profile extends Fragment {
 
-    FragmentProfileBinding binding;
-    GoogleSignInAccount account;
-    GoogleSignInOptions signInOptions;
-    GoogleSignInClient signInClient;
+    private FragmentProfileBinding binding;
+    private ProfileViewModel profileViewModel;
 
     public Profile() {
         // Required empty public constructor
@@ -39,14 +33,13 @@ public class Profile extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        // Inflate the layout for this fragment
         return binding.getRoot();
     }
 
@@ -57,56 +50,35 @@ public class Profile extends Fragment {
     }
 
     private void initvar() {
-        account = GoogleSignIn.getLastSignedInAccount(getContext());
-        binding.uName.setText(account.getDisplayName());
-        binding.uEmail.setText(account.getEmail());
-        Glide.with(getContext()).load(account.getPhotoUrl()).into(binding.profileDp);
+        profileViewModel.getAccount().observe(getViewLifecycleOwner(), account -> {
+            if (account != null) {
+                binding.uName.setText(account.getDisplayName());
+                binding.uEmail.setText(account.getEmail());
+                Glide.with(getContext()).load(account.getPhotoUrl()).into(binding.profileDp);
+            }
+        });
+        profileViewModel.loadAccount(getContext());
 
         logoutuser();
     }
 
     private void logoutuser() {
-        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.btnLogout.setOnClickListener(v -> {
+            GoogleSignInClient signInClient = GoogleSignInClientInstance.getInstance(getContext());
 
-                signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-
-                signInClient = GoogleSignIn.getClient(getContext(), signInOptions);
-
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Log Out?")
-                        .setMessage("Are you sure to logout from app??")
-                        .setCancelable(false)
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                FirebaseAuth.getInstance().signOut();//logout from firebase
-
-                                signInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() { //logout from google-auth
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        dialog.dismiss();
-                                        startActivity(new Intent(getActivity().getApplicationContext(), SplashActivity.class));
-                                        getActivity().finish();
-                                    }
-                                });
-                            }
-                        }).show();
-
-
-            }
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Log Out?")
+                    .setMessage("Are you sure to logout from app?")
+                    .setCancelable(false)
+                    .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton("Yes!", (dialog, which) -> {
+                        profileViewModel.signOut(getContext(), signInClient, () -> {
+                            dialog.dismiss();
+                            startActivity(new Intent(getActivity().getApplicationContext(), SplashActivity.class));
+                            getActivity().finish();
+                        });
+                    }).show();
         });
-
     }
 
     @Override

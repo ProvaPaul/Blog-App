@@ -7,7 +7,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -20,15 +19,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.example.blogapplication.PublishViewModel;
 import com.example.blogapplication.databinding.FragmentPublishBinding;
+import com.google.firebase.storage.FirebaseStorage;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -43,9 +38,9 @@ import java.util.List;
 
 public class Publish extends Fragment {
 
-    FragmentPublishBinding binding;
-    Uri filepath;
-
+    private FragmentPublishBinding binding;
+    private Uri filepath;
+    private PublishViewModel publishViewModel;
 
     public Publish() {
         // Required empty public constructor
@@ -54,13 +49,12 @@ public class Publish extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        publishViewModel = new ViewModelProvider(this).get(PublishViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentPublishBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -85,7 +79,6 @@ public class Publish extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 101 && resultCode == RESULT_OK && data != null && data.getData() != null) {
@@ -124,51 +117,18 @@ public class Publish extends Fragment {
                                 String author = binding.bAuthor.getText().toString();
 
                                 if (filepath != null) {
-                                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                                    StorageReference reference = storage.getReference().child("images/" + filepath.toString() + ".jpg");
-                                    reference.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    publishViewModel.uploadData(filepath, title, desc, author, getContext(), pd, new Runnable() {
                                         @Override
-                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            reference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Uri> task) {
-                                                    String file_url = task.getResult().toString();
-                                                    String date = (String) DateFormat.format("dd", new Date());
-                                                    String month = (String) DateFormat.format("MMM", new Date());
-                                                    String final_date = date + " " + month;
-
-                                                    HashMap<String, String> map = new HashMap<>();
-                                                    map.put("tittle", title);
-                                                    map.put("desc", desc);
-                                                    map.put("author", author);
-                                                    map.put("date", final_date);
-                                                    map.put("img", file_url);
-                                                    map.put("timestamp", String.valueOf(System.currentTimeMillis()));
-                                                    map.put("share_count", "0");
-
-                                                    FirebaseFirestore.getInstance().collection("Blogs").document().set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            if (task.isSuccessful()) {
-                                                                pd.dismiss();
-                                                                Toast.makeText(getContext(), "Post Uploaded!!!", Toast.LENGTH_SHORT).show();
-
-                                                                binding.imgThumbnail.setVisibility(View.INVISIBLE);
-                                                                binding.view2.setVisibility(View.VISIBLE);
-                                                                binding.bSelectImage.setVisibility(View.VISIBLE);
-                                                                binding.bTittle.setText("");
-                                                                binding.bDesc.setText("");
-                                                                binding.bAuthor.setText("");
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                            });
+                                        public void run() {
+                                            binding.imgThumbnail.setVisibility(View.INVISIBLE);
+                                            binding.view2.setVisibility(View.VISIBLE);
+                                            binding.bSelectImage.setVisibility(View.VISIBLE);
+                                            binding.bTittle.setText("");
+                                            binding.bDesc.setText("");
+                                            binding.bAuthor.setText("");
                                         }
                                     });
                                 }
-
-
                             }
                         }
                         if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()){
@@ -188,9 +148,7 @@ public class Publish extends Fragment {
                     }
                 }).onSameThread().check();
             }
-
         });
-
     }
 
     private void showsettingdialog() {
