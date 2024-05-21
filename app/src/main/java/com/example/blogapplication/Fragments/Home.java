@@ -101,6 +101,7 @@ public class Home extends Fragment {
     }
 
     private void filter(String newText) {
+
         ArrayList<Model> filteredList = new ArrayList<>();
         for (Model item : list) {
             if (item.getTittle().toLowerCase().contains(newText.toLowerCase())) {
