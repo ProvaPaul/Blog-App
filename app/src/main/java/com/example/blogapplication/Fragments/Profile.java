@@ -27,10 +27,9 @@ import com.example.blogapplication.databinding.FragmentProfileBinding;
 
 public class Profile extends Fragment {
 
-    FragmentProfileBinding binding;
-    GoogleSignInAccount account;
-    GoogleSignInOptions signInOptions;
-    GoogleSignInClient signInClient;
+    private FragmentProfileBinding binding;
+    private GoogleSignInAccount account;
+    private GoogleSignInClient signInClient;
 
     public Profile() {
         // Required empty public constructor
@@ -39,7 +38,6 @@ public class Profile extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -52,34 +50,28 @@ public class Profile extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        initvar();
+        initVar();
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void initvar() {
+    private void initVar() {
         account = GoogleSignIn.getLastSignedInAccount(getContext());
-        binding.uName.setText(account.getDisplayName());
-        binding.uEmail.setText(account.getEmail());
-        Glide.with(getContext()).load(account.getPhotoUrl()).into(binding.profileDp);
+        if (account != null) {
+            binding.uName.setText(account.getDisplayName());
+            binding.uEmail.setText(account.getEmail());
+            Glide.with(getContext()).load(account.getPhotoUrl()).into(binding.profileDp);
+        }
 
-        logoutuser();
+        logoutUser();
     }
 
-    private void logoutuser() {
+    private void logoutUser() {
         binding.btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-
-                signInClient = GoogleSignIn.getClient(getContext(), signInOptions);
-
                 new AlertDialog.Builder(getActivity())
                         .setTitle("Log Out?")
-                        .setMessage("Are you sure to logout from app??")
+                        .setMessage("Are you sure to logout from app?")
                         .setCancelable(false)
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
@@ -89,10 +81,9 @@ public class Profile extends Fragment {
                         }).setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                FirebaseAuth.getInstance().signOut(); // logout from firebase
 
-                                FirebaseAuth.getInstance().signOut();//logout from firebase
-
-                                signInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() { //logout from google-auth
+                                getGoogleSignInClient().signOut().addOnCompleteListener(new OnCompleteListener<Void>() { // logout from google-auth
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         dialog.dismiss();
@@ -102,11 +93,22 @@ public class Profile extends Fragment {
                                 });
                             }
                         }).show();
-
-
             }
         });
+    }
 
+    // Singleton pattern for GoogleSignInClient
+    private static GoogleSignInClient signInClientInstance;
+
+    private GoogleSignInClient getGoogleSignInClient() {
+        if (signInClientInstance == null) {
+            GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            signInClientInstance = GoogleSignIn.getClient(getContext(), signInOptions);
+        }
+        return signInClientInstance;
     }
 
     @Override

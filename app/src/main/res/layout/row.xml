@@ -27,6 +27,7 @@
             android:layout_margin="10dp"
             android:background="@drawable/light_bg"
             android:backgroundTint="@color/light_white"
+            android:fontFamily="@font/poppins_semibold"
             android:gravity="center"
             android:text="12 OCT"
             android:textColor="@color/black"
@@ -52,6 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
+            android:fontFamily="@font/poppins_medium"
             android:text="AJAZ AHMED"
             android:textColor="@color/dark_black"
             android:textSize="10sp" />
@@ -62,6 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
             android:maxLines="3"
+            android:fontFamily="@font/poppins_semibold"
             android:text="Master Your Skill With Fun And Learn Very Fundamentals..."
             android:textColor="@color/dark_black"
             android:textSize="12sp" />
@@ -72,6 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
             android:layout_marginBottom="0dp"
+            android:fontFamily="@font/poppins_medium"
             android:text="162 Shared"
             android:textColor="@color/black"
             android:textSize="12sp" />
