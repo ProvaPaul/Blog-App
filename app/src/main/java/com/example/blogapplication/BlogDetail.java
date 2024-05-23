@@ -3,6 +3,7 @@ package com.example.blogapplication;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
@@ -23,16 +24,20 @@ public class BlogDetail extends AppCompatActivity {
     String title, desc, count;
     int n_count;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityBlogDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
         showData();
     }
 
     private void showData() {
         id = getIntent().getStringExtra("id");
+
         getFirestoreInstance().collection("Blogs").document(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -83,5 +88,6 @@ public class BlogDetail extends AppCompatActivity {
             firestoreInstance = FirebaseFirestore.getInstance();
         }
         return firestoreInstance;
+
     }
 }

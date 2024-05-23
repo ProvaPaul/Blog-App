@@ -5,10 +5,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.example.blogapplication.Adapter;
 import com.example.blogapplication.Model;
 import com.example.blogapplication.databinding.FragmentHomeBinding;
@@ -17,6 +19,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 
 public class Home extends Fragment {
@@ -37,16 +40,20 @@ public class Home extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
+
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         setupRecyclerView();  // Encapsulated the RecyclerView setup
         setupSearchView();  // Encapsulated the SearchView setup
         super.onViewCreated(view, savedInstanceState);
+
     }
 
     private void setupRecyclerView() {
@@ -102,6 +109,7 @@ public class Home extends Fragment {
 
     private void filter(String newText) {
 
+
         ArrayList<Model> filteredList = new ArrayList<>();
         for (Model item : list) {
             if (item.getTittle().toLowerCase().contains(newText.toLowerCase())) {
@@ -114,6 +122,7 @@ public class Home extends Fragment {
             adapter.filter_list(filteredList);
         }
     }
+
 
     @Override
     public void onDestroy() {

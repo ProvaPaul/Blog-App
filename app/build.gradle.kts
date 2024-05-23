@@ -50,11 +50,13 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.1")
 
     // Firebase Auth
-// Google Sign-In'
+    // Google Sign-In'
     implementation("com.google.firebase:firebase-auth:22.3.1")
 
     implementation("com.google.android.gms:play-services-auth:20.3.0")
+
 //Dexter Library Android
     implementation("com.karumi:dexter:6.2.3")
     testImplementation ("junit:junit:4.13.2")
+
 }

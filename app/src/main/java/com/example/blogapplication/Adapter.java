@@ -96,6 +96,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                                 } else if (author.getText().toString().equals("")) {
                                     author.setError("Field is Required!!");
                                 } else {
+
                                     HashMap<String, Object> map = new HashMap<>();
                                     map.put("tittle", title.getText().toString());
                                     map.put("desc", desc.getText().toString());
@@ -111,14 +112,17 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                                                     }
                                                 }
                                             });
+
                                 }
                             }
                         });
+
                     }
                 });
                 builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
                         AlertDialog.Builder builders = new AlertDialog.Builder(holder.author.getContext());
                         builders.setTitle("Are you sure to Delete it?");
                         builders.setPositiveButton("Yes! I am Sure", new DialogInterface.OnClickListener() {
@@ -128,6 +132,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                                 dialog.dismiss();
                             }
                         });
+
                         AlertDialog dialogs = builders.create();
                         dialogs.show();
                     }

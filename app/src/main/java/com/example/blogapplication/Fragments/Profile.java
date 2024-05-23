@@ -11,25 +11,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-
+import com.example.blogapplication.ProfileViewModel;
 import com.example.blogapplication.R;
 import com.example.blogapplication.SplashActivity;
 import com.example.blogapplication.databinding.FragmentProfileBinding;
+import com.example.blogapplication.GoogleSignInClientInstance;
 
 public class Profile extends Fragment {
 
     private FragmentProfileBinding binding;
+
     private GoogleSignInAccount account;
     private GoogleSignInClient signInClient;
+
 
     public Profile() {
         // Required empty public constructor
@@ -38,13 +36,14 @@ public class Profile extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        // Inflate the layout for this fragment
         return binding.getRoot();
     }
 
@@ -61,6 +60,7 @@ public class Profile extends Fragment {
             binding.uEmail.setText(account.getEmail());
             Glide.with(getContext()).load(account.getPhotoUrl()).into(binding.profileDp);
         }
+
 
         logoutUser();
     }
@@ -109,6 +109,7 @@ public class Profile extends Fragment {
             signInClientInstance = GoogleSignIn.getClient(getContext(), signInOptions);
         }
         return signInClientInstance;
+
     }
 
     @Override

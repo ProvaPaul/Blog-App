@@ -1,33 +1,38 @@
 package com.example.blogapplication;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
+
 
 import com.example.blogapplication.databinding.ActivitySplashBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SplashActivity extends AppCompatActivity {
 
     private ActivitySplashBinding binding;
+
     private GoogleSignInOptions signInOptions;
     private FirebaseAuth auth;
     private GoogleSignInClient signInClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +56,12 @@ public class SplashActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = auth.getCurrentUser();
+
         if (currentUser != null) {
             startActivity(new Intent(this, DrawerActivity.class));
             finish();
         } else {
+
             signIn();
         }
     }
@@ -62,6 +69,7 @@ public class SplashActivity extends AppCompatActivity {
     private void signIn() {
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(intent, 100);
+
     }
 
     @Override
@@ -72,7 +80,9 @@ public class SplashActivity extends AppCompatActivity {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+
                 auth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -90,6 +100,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
     }
+
 
     // Singleton pattern for FirebaseAuth
     private static FirebaseAuth firebaseAuthInstance;
@@ -110,4 +121,5 @@ public class SplashActivity extends AppCompatActivity {
         }
         return googleSignInClientInstance;
     }
+
 }

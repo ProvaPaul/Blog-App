@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.blogapplication.databinding.FragmentPublishBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,6 +46,7 @@ public class Publish extends Fragment {
     private FragmentPublishBinding binding;
     private Uri filepath;
 
+
     public Publish() {
         // Required empty public constructor
     }
@@ -52,6 +54,7 @@ public class Publish extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -119,6 +122,7 @@ public class Publish extends Fragment {
                                 String author = binding.bAuthor.getText().toString();
 
                                 if (filepath != null) {
+
                                     StorageReference reference = createStorageReference(filepath.toString());
                                     reference.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
@@ -158,6 +162,7 @@ public class Publish extends Fragment {
                                                     });
                                                 }
                                             });
+
                                         }
                                     });
                                 }
@@ -165,6 +170,7 @@ public class Publish extends Fragment {
                         }
                         if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()){
                             showSettingDialog();
+
                         }
                     }
 
@@ -183,6 +189,7 @@ public class Publish extends Fragment {
         });
     }
 
+
     // Factory method for creating StorageReference
     private StorageReference createStorageReference(String filePath) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -195,6 +202,7 @@ public class Publish extends Fragment {
     }
 
     private void showSettingDialog() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Need Permission");
         builder.setMessage("This app needs permission to use this feature. You can grant us these permissions manually by clicking on the button below");
