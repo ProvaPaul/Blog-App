@@ -6,12 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -20,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-
 import com.example.blogapplication.R;
 import com.example.blogapplication.SplashActivity;
 import com.example.blogapplication.databinding.FragmentProfileBinding;
@@ -70,32 +67,33 @@ public class Profile extends Fragment {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Log Out?")
-                        .setMessage("Are you sure to logout from app?")
-                        .setCancelable(false)
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                FirebaseAuth.getInstance().signOut(); // logout from firebase
+                .setTitle("Log Out?")
+                .setMessage("Are you sure to logout from app?")
+                .setCancelable(false)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FirebaseAuth.getInstance().signOut(); // logout from firebase
 
-                                getGoogleSignInClient().signOut().addOnCompleteListener(new OnCompleteListener<Void>() { // logout from google-auth
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        dialog.dismiss();
-                                        startActivity(new Intent(getActivity().getApplicationContext(), SplashActivity.class));
-                                        getActivity().finish();
-                                    }
-                                });
+                        getGoogleSignInClient().signOut().addOnCompleteListener(new OnCompleteListener<Void>() { // logout from google-auth
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                dialog.dismiss();
+                                startActivity(new Intent(getActivity().getApplicationContext(), SplashActivity.class));
+                                getActivity().finish();
                             }
-                        }).show();
+                        });
+                    }
+                }).show();
             }
         });
     }
+
 
     // Singleton pattern for GoogleSignInClient
     private static GoogleSignInClient signInClientInstance;
