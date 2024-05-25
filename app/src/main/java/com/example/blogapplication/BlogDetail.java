@@ -31,48 +31,48 @@ public class BlogDetail extends AppCompatActivity {
         showData();
     }
 
-    private void showData() {
-        id = getIntent().getStringExtra("id");
-        getFirestoreInstance().collection("Blogs").document(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (value != null) {
-                    Glide.with(getApplicationContext()).load(value.getString("img")).into(binding.imageView3);
-                    binding.textView4.setText(Html.fromHtml("<font color='B7B7B7'>By </font> <font color='#000000'>" + value.getString("author")));
-                    binding.textView5.setText(value.getString("tittle"));
-                    binding.textView6.setText(value.getString("desc"));
-                    title = value.getString("tittle");
-                    desc = value.getString("desc");
-                    count = value.getString("share_count");
+        private void showData() {
+            id = getIntent().getStringExtra("id");
+            getFirestoreInstance().collection("Blogs").document(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if (value != null) {
+                        Glide.with(getApplicationContext()).load(value.getString("img")).into(binding.imageView3);
+                        binding.textView4.setText(Html.fromHtml("<font color='B7B7B7'>By </font> <font color='#000000'>" + value.getString("author")));
+                        binding.textView5.setText(value.getString("tittle"));
+                        binding.textView6.setText(value.getString("desc"));
+                        title = value.getString("tittle");
+                        desc = value.getString("desc");
+                        count = value.getString("share_count");
 
-                    int i_count = Integer.parseInt(count);
-                    n_count = i_count + 1;
+                        int i_count = Integer.parseInt(count);
+                        n_count = i_count + 1;
+                    }
                 }
-            }
-        });
+            });
 
-        binding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                String shareBody = desc;
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_SUBJECT, title);
-                intent.putExtra(Intent.EXTRA_TEXT, shareBody);
-                startActivity(Intent.createChooser(intent, "Share Using"));
+            binding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    String shareBody = desc;
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, title);
+                    intent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(intent, "Share Using"));
 
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("share_count", String.valueOf(n_count));
-                getFirestoreInstance().collection("Blogs").document(id).update(map);
-            }
-        });
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("share_count", String.valueOf(n_count));
+                    getFirestoreInstance().collection("Blogs").document(id).update(map);
+                }
+            });
 
-        binding.imageView4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+            binding.imageView4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
     }
 
     // Singleton pattern for FirebaseFirestore
