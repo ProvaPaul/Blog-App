@@ -61,13 +61,13 @@ Contributions are welcome! If you'd like to contribute to the project, please fo
 5. Push to the branch (git push origin feature/yourfeature).
 6. Create a new Pull Request.
 
-   ## Authors
+## Authors
    
 - [Sayma Mridula](https://github.com/sayma-mridula)<br>
 Department of Computer Science and Engineering<br>
 Khulna University of Engineering & Technology, Khulna 9203.
 
-- [ProvaPaul](https://github.com/ProvaPaul)<br>
+- [Prova Paul](https://github.com/ProvaPaul)<br>
 Department of Computer Science and Engineering<br>
 Khulna University of Engineering & Technology, Khulna 9203.
 
