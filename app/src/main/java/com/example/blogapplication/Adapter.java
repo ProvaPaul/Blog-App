@@ -25,13 +25,16 @@ import java.util.HashMap;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
+    // ArrayList to hold the data
     private ArrayList<Model> list;
 
+    // Constructor to initialize the Adapter with data
     public Adapter(ArrayList<Model> list) {
         this.list = list;
         this.notifyDataSetChanged();
     }
 
+    // Method to update the list with filtered data
     public void filter_list(ArrayList<Model> filter_list) {
         list = filter_list;
         notifyDataSetChanged();
@@ -40,22 +43,26 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return createViewHolder(parent); // Use the factory method to create ViewHolder
+        // Using Factory Method pattern to create ViewHolder instances
+        return createViewHolder(parent);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Model model = list.get(position);
+        // Setting data to views in ViewHolder
         holder.title.setText(model.getTittle());
         holder.date.setText(model.getDate());
         holder.share_count.setText(model.getShare_count());
         holder.author.setText(model.getAuthor());
 
+        // Using Glide library to load images asynchronously
         Glide.with(holder.author.getContext()).load(model.getImg()).into(holder.img);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Intent for opening BlogDetail activity
                 Intent intent = new Intent(holder.author.getContext(), BlogDetail.class);
                 intent.putExtra("id", model.getId());
                 holder.author.getContext().startActivity(intent);
@@ -65,11 +72,16 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                // AlertDialog for user actions
                 AlertDialog.Builder builder = new AlertDialog.Builder(holder.author.getContext());
                 builder.setTitle("What you want to do?");
+
+                // Proxy Pattern: AlertDialog acts as a proxy for user interactions
+
                 builder.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Dialog for updating blog details
                         final Dialog u_dialog = new Dialog(holder.author.getContext());
                         u_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         u_dialog.setCancelable(false);
@@ -96,6 +108,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                                 } else if (author.getText().toString().equals("")) {
                                     author.setError("Field is Required!!");
                                 } else {
+                                    // Update data in Firestore
                                     HashMap<String, Object> map = new HashMap<>();
                                     map.put("tittle", title.getText().toString());
                                     map.put("desc", desc.getText().toString());
@@ -116,14 +129,17 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                         });
                     }
                 });
+
                 builder.setNegativeButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // AlertDialog for confirmation before deleting
                         AlertDialog.Builder builders = new AlertDialog.Builder(holder.author.getContext());
                         builders.setTitle("Are you sure to Delete it?");
                         builders.setPositiveButton("Yes! I am Sure", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                // Delete data from Firestore
                                 FirebaseFirestore.getInstance().collection("Blogs").document(model.getId()).delete();
                                 dialog.dismiss();
                             }
@@ -150,13 +166,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
+    // ViewHolder class to hold the views
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView img;
         TextView date, title, share_count, author;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             img = itemView.findViewById(R.id.imageView3);
             date = itemView.findViewById(R.id.t_date);
             title = itemView.findViewById(R.id.textView9);
