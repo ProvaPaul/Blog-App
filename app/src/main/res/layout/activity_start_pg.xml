@@ -34,6 +34,6 @@
         android:padding="16dp"
         android:text="Start"
         android:textColor="#FFFFFF"
-        android:textSize="18sp" />
+        android:textSize="10sp" />
 
 </RelativeLayout>
